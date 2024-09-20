@@ -1,0 +1,41 @@
+volumes:
+  redis:
+
+services:
+
+  server:
+    image: openwrt/asu:latest
+    restart: always
+    environment:
+      - REDIS_URL=redis://redis/
+      - CONTAINER_HOST=unix:///run/podman/podman.sock
+    volumes:
+      - /opt/asu:/opt/asu:rw
+      - /opt/asu/config.py:/app/asu/config.py:ro
+      - /opt/asu/main.py:/app/asu/main.py:ro
+      - /run/podman/podman.sock:/run/podman/podman.sock:rw
+    ports:
+      - 8100:8000
+    depends_on:
+      - redis
+
+  worker:
+    image: openwrt/asu:latest
+    restart: always
+    command: rqworker --with-scheduler
+    environment:
+      - REDIS_URL=redis://redis/
+      - CONTAINER_HOST=unix:///run/podman/podman.sock
+    volumes:
+      - /opt/asu:/opt/asu:rw
+      - /opt/asu/config.py:/app/asu/config.py:ro
+      - /opt/asu/main.py:/app/asu/main.py:ro
+      - /run/podman/podman.sock:/run/podman/podman.sock:rw
+    depends_on:
+      - redis
+
+  redis:
+    image: docker.io/redis/redis-stack-server
+    restart: always
+    volumes:
+      - /opt/asu/redis:/data:rw

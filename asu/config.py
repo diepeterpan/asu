@@ -7,9 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    public_path: Path = Path.cwd() / "public"
+    public_path: Path = Path("/opt/asu/public")
     json_path: Path = public_path / "json" / "v1"
-    redis_url: str = "redis://localhost:6379"
+    redis_url: str = "redis://redis/"
     upstream_url: str = "https://downloads.openwrt.org"
     allow_defaults: bool = False
     async_queue: bool = True
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     max_defaults_length: int = 20480
     repository_allow_list: list = []
     base_container: str = "ghcr.io/openwrt/imagebuilder"
-    update_token: Union[str, None] = "foobar"
+    update_token: Union[str, None] = "changeme"
     container_host: str = "localhost"
     container_identity: str = ""
     branches: dict = {
@@ -91,7 +91,7 @@ class Settings(BaseSettings):
         },
     }
     server_stats: str = "/stats"
-    log_level: str = "INFO"
+    log_level: str = "DEBUG"
 
 
 settings = Settings()
